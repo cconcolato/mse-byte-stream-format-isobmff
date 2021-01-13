@@ -96,6 +96,7 @@
     -->
 
     <style>
+      .iso-brand { font-weight: bold; font-style: italic; }
       .iso-box { font-weight: bold; }
       .iso-var { font-style: italic; }
     </style>
@@ -136,6 +137,9 @@
       <p>The user agent MUST run the <a def-id="append-decode-error-algorithm"></a> if any of the following conditions are met:</p>
       <ol>
         <li>The user agent does not support any of the values indicated in the <span class="iso-var">major_brand</span> or <span class="iso-var">compatible_brands</span> fields of File Type Box.</li>
+        <li>None of the brands indicated in the File Type Box support <a def-id="movie-fragment-relative-addressing"></a> and the <span class="iso-box">tfdt</span> box.
+        <p class="note">This means the brand <span class="iso-brand">iso6</span> or any other brands that require the same feature support should be used.</p>
+        </li>
         <li>A box or field in the Movie Box is encountered that violates the requirements mandated
            by the values that the user agent supports in the <span class="iso-var">major_brand</span> or
           <span class="iso-var">compatible_brands</span> fields in the File Type Box.</li>
