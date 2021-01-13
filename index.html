@@ -175,10 +175,9 @@
       <p>The user agent MUST run the <a def-id="append-decode-error-algorithm"></a> if any of the following conditions are met:</p>
       <ol>
         <li>A box or field in the Movie Fragment Box is encountered that violates the requirements mandated
-          by the <span class="iso-var">major_brand</span> or one of the
-          <span class="iso-var">compatible_brands</span> in the Segment Type Box in this
-          <a def-id="media-segment"></a> or the File Type Box in the <a def-id="init-segment"></a> if a
-          Segment Type Box is not present.</li>
+          by the values that the user agent supports in the <span class="iso-var">major_brand</span> or the
+          <span class="iso-var">compatible_brands</span> field in the Segment Type Box in this
+          <a def-id="media-segment"></a> if present, and the File Type Box in the <a def-id="init-segment"></a>.</li>
         <li>This <a def-id="media-segment"></a> contains a Segment Type Box that is not compatible with the
           File Type Box in the <a def-id="init-segment"></a>.</li>
   <li>The Movie Fragment Box does not contain at least one Track Fragment Box (<span class="iso-box">traf</span>).</li>
