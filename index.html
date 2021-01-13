@@ -150,7 +150,7 @@
       <p>The user agent MUST support codec configurations stored out-of-band in the sample entry, and for codecs which allow codec configurations stored inband in the samples themselves, the user agent SHOULD support codec configurations stored inband.</p>
       <p class="note">For example, for codecs which include SPS and PPS parameter sets, for maximum content interoperability, user agents are strongly advised to support both inband (e.g., as defined for avc3/avc4) and out-of-band (e.g., as defined for avc1/2) storage of the SPS and PPS.</p>
 
-      <p>Valid top-level boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, and <span class="iso-box">sidx</span> are
+      <p>Valid top-level boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, and <span class="iso-box">meta</span> are
         allowed to appear before the <span class="iso-box">moov</span> box. These boxes MUST be accepted and ignored by the user agent and are not
         considered part of the <a def-id="init-segment"></a> in this specification.</p>
 
