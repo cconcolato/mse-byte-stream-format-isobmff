@@ -132,7 +132,10 @@
 
     <section id="iso-init-segments">
       <h4>Initialization Segments</h4>
-      <p>An ISO BMFF <a def-id="init-segment"></a> is defined in this specification as a single Movie Box (<span class="iso-box">moov</span>) with the constraints defined below, optionally preceded by a File Type Box (<span class="iso-box">ftyp</span>).</p>
+      <p>An ISO BMFF <a def-id="init-segment"></a> is defined in this specification as a sequence of ISOBMFF boxes, where the last box is a Movie Box 
+      (<span class="iso-box">moov</span>) with the constraints defined below, optionally preceded by a File Type Box (<span class="iso-box">ftyp</span>)
+      and other boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, or <span class="iso-box">meta</span>, excluding 
+      the boxes forming a <a def-id="media-segment"></a>.</p>
 
       <p>Valid top-level boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, and <span class="iso-box">meta</span> are
         allowed to appear before the <span class="iso-box">moov</span> box. These boxes MUST be accepted and ignored by the user agent and are not
