@@ -146,7 +146,7 @@
         <li>A box or field in the Movie Box is encountered that violates the requirements mandated by <a def-id="iso-14496-12"></a>, such as mandatory presence of a box.</li>
         <li>The tracks in the Movie Box contain samples (i.e., the <span class="iso-var">entry_count</span> in the
           <span class="iso-box">stts</span>, <span class="iso-box">stsc</span> or <span class="iso-box">stco</span> boxes are not set to zero).</li>
-        <li>A Movie Extends (<span class="iso-box">mvex</span>) box is not contained in the Movie (<span class="iso-box">moov</span>) box to indicate that Movie Fragments are to be expected.</li>
+        <li>the Movie Box does not contain a Movie Extends Box (<span class="iso-box">mvex</span>), which is used to indicate that Movie Fragments are to be expected.</li>
       </ol>
       <p>The user agent MUST support setting the offset from media composition time to movie presentation time by handling an Edit Box (<span class="iso-box">edts</span>) containing a single Edit List Box
         (<span class="iso-box">elst</span>) that contains a single edit with media rate one. This edit MAY have a duration of 0 (indicating that it spans all subsequent media) or MAY have a non-zero duration
