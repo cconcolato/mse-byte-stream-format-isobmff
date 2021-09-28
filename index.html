@@ -119,7 +119,7 @@
       <p>This specification defines segment formats for implementations of <a def-id="mse-spec"></a> [[!MEDIA-SOURCE]] that choose to support the ISO Base Media File Format
   <a def-id="iso-14496-12"></a> [[!ISOBMFF]].</p> It defines the MIME-type parameters used to signal codecs, and provides
       the necessary format specific definitions for <a def-id="init-segments"></a>, <a def-id="media-segments"></a>, and <a def-id="random-access-points"></a> required by
-      the <a def-id="byte-stream-formats-section"></a> of the Media Source Extensions spec.</p>
+      the <a def-id="byte-stream-formats-section"></a> of the Media Source Extensions specification.</p>
     </section>
 
     <section id="mime-parameters">
@@ -132,20 +132,19 @@
 
     <section id="iso-init-segments">
       <h4>Initialization Segments</h4>
-      <p>An ISO BMFF <a def-id="init-segment"></a> is defined in this specification as a sequence of ISOBMFF boxes, where the last box is a Movie Box 
-      (<span class="iso-box">moov</span>) with the constraints defined below, optionally preceded by a File Type Box (<span class="iso-box">ftyp</span>)
-      and other boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, or <span class="iso-box">meta</span>, excluding 
-      the boxes forming a <a def-id="media-segment"></a>.</p>
+      <p>An ISO BMFF <a def-id="init-segment"></a> is defined in this specification as a single Movie Box 
+      (<span class="iso-box">moov</span>) with the constraints defined below.</p>
 
-      <p>Valid top-level boxes such as <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, and <span class="iso-box">meta</span> are
-        allowed to appear before the <span class="iso-box">moov</span> box. These boxes MUST be accepted and ignored by the user agent and are not
-        considered part of the <a def-id="init-segment"></a> in this specification.</p>
+      <p>Other boxes such as <span class="iso-box">ftyp</span>, <span class="iso-box">pdin</span>, <span class="iso-box">free</span>, or <span class="iso-box">meta</span> MAY be appear before the Movie Box, MUST be accepted, and MAY be ignored by the user agent.</p>
+
+      <p class="note">The boxes defining an <a def-id="init-segment"></a> and a <a def-id="media-segment"></a> being distinct, a parser can unambiguously detect if a sequence of bytes starts an <a def-id="init-segment"></a> and a <a def-id="media-segment"></a>, as required by the Segment Parser Loop algorithm of the Media Source Extensions specification.</p>
 
       <p>The user agent MUST run the <a def-id="append-decode-error-algorithm"></a> if any of the following conditions are met:</p>
       <ol>
-        <li>A box or field in the Movie Box is encountered that violates the requirements mandated by <a def-id="iso-14496-12"></a>, such as mandatory presence of a box.</li>
+        <li>A box or field in the Movie Box is encountered that violates the requirements mandated by <a def-id="iso-14496-12"></a>, such as mandatory presence of a child box.</li>
         <li>The tracks in the Movie Box contain samples (i.e., the <span class="iso-var">entry_count</span> in the
           <span class="iso-box">stts</span>, <span class="iso-box">stsc</span> or <span class="iso-box">stco</span> boxes are not set to zero).</li>
+        <li>External data references are being used (i.e., the flag 0x000001 is NOT set in the <span class="iso-box">dref</span> entry referenced by the data_reference_index field in the Sample Entries).</li>
         <li>the Movie Box does not contain a Movie Extends Box (<span class="iso-box">mvex</span>), which is used to indicate that Movie Fragments are to be expected.</li>
       </ol>
       <p>The user agent MUST support setting the offset from media composition time to movie presentation time by handling an Edit Box (<span class="iso-box">edts</span>) containing a single Edit List Box
@@ -161,32 +160,23 @@
 
     <section id="iso-media-segments">
       <h4>Media Segments</h4>
-      <p>An ISO BMFF <a def-id="media-segment"></a> is defined in this specification as one optional
-        Segment Type Box (<span class="iso-box">styp</span>) followed by a single Movie Fragment Box
-        (<span class="iso-box">moof</span>) followed by one or more Media Data Boxes (<span class="iso-box">mdat</span>).
-        If the Segment Type Box is not present, the segment MUST conform to the brands listed in the
-        File Type Box (<span class="iso-box">ftyp</span>) in the <a def-id="init-segment"></a>.</p>
-      <p>Valid top-level boxes defined in <a def-id="iso-14496-12"></a> other than <span class="iso-box">ftyp</span>,
-        <span class="iso-box">moov</span>, <span class="iso-box">styp</span>, <span class="iso-box">moof</span>, and <span class="iso-box">mdat</span> are allowed to appear between the end of an
-        <a def-id="init-segment"></a> (e.g. <span class="iso-box">sidx</span> or <span class="iso-box">ssix</span>) or <a def-id="media-segment"></a> and before the beginning of a new <a def-id="media-segment"></a>.
-        These boxes MUST be accepted and ignored by the user agent and are not considered part of the <a def-id="media-segment"></a> in this
-        specification.
-      </p>
+      <p>An ISO BMFF <a def-id="media-segment"></a> is defined in this specification as a single Movie Fragment Box
+        (<span class="iso-box">moof</span>) with the constraints below, followed by the one or more Media Data Boxes (<span class="iso-box">mdat</span>) that contain all the samples referenced by the Track Fragment Run Boxes (<span class="iso-box">trun</span>) of the Movie Fragment Box.</p>
+
+        <p>Other boxes (e.g. <span class="iso-box">styp</span>, <span class="iso-box">sidx</span>, <span class="iso-box">ssix</span>)  MAY appear between the end of an <a def-id="init-segment"></a> or <a def-id="media-segment"></a> and before the beginning of a new <a def-id="media-segment"></a>, or even between the Movie Fragment Box and/or the Media Data Boxes.
+        These boxes MUST be accepted and MAY be ignored by the user agent.</p>
+
+        <p class="note">The presence of a box defining an <a def-id="init-segment"></a> or a <a def-id="media-segment"></a> ends the current <a def-id="media-segment"></a>, possibly creating an invalid <a def-id="media-segment"></a> and triggering an error if the <a def-id="media-segment"></a> is not complete (see below).</p>
+
 
       <p>The user agent MUST run the <a def-id="append-decode-error-algorithm"></a> if any of the following conditions are met:</p>
       <ol>
-        <li>A box or field in the Movie Fragment Box is encountered that violates the requirements mandated
-          by the values that the user agent supports in the <span class="iso-var">major_brand</span> or the
-          <span class="iso-var">compatible_brands</span> field in the Segment Type Box in this
-          <a def-id="media-segment"></a> if present, and the File Type Box in the <a def-id="init-segment"></a>.</li>
-        <li>This <a def-id="media-segment"></a> contains a Segment Type Box that is not compatible with the
-          File Type Box in the <a def-id="init-segment"></a>.</li>
-  <li>The Movie Fragment Box does not contain at least one Track Fragment Box (<span class="iso-box">traf</span>).</li>
-  <li>The Movie Fragment Box does not use <a>movie-fragment relative addressing</a>.</li>
-  <li>External data references are being used.</li>
-  <li>At least one Track Fragment Box does not contain a Track Fragment Decode Time Box (<span class="iso-box">tfdt</span>)</li>
-  <li>The Media Data Boxes do not contain all the samples referenced by the Track Fragment Run Boxes (<span class="iso-box">trun</span>) of the Movie Fragment Box.</li>
-  <li>Inband parameter sets are not present in the appropriate samples and parameter sets are not present in the last initialization segment appended.</li>
+        <li>A box or field is encountered that violates the requirements mandated by <a def-id="iso-14496-12"></a>, such as mandatory presence of a child box.</li>
+        <li>The Movie Fragment Box does not contain at least one Track Fragment Box (<span class="iso-box">traf</span>).</li>
+        <li>The Movie Fragment Box does not use <a>movie-fragment relative addressing</a>.</li>
+        <li>At least one Track Fragment Box does not contain a Track Fragment Decode Time Box (<span class="iso-box">tfdt</span>)</li>
+        <li>The Media Data Boxes do not contain all the samples referenced by the Track Fragment Run Boxes (<span class="iso-box">trun</span>) of the Movie Fragment Box.</li>
+        <li>Inband parameter sets are not present in the appropriate samples and parameter sets are not present in the last initialization segment appended.</li>
       </ol>
 
       <p>A Movie Fragment Box uses <dfn>movie-fragment relative addressing</dfn>
